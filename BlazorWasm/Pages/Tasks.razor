@@ -1,35 +1,73 @@
 @page "/tasks"
 @inject TaskService TaskService
+   <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                    <h3>Tasks</h3>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <!-- Filter input -->
+                        <input type="text" @bind="searchText" placeholder="Search tasks by title..." class="form-control mb-3" style="width: 50em;" />
 
-<h3>Tasks</h3>
-
-@if (tasks == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <ul>
-        @foreach (var task in tasks)
-        {
-            <li>@task.Title ,     @task.Description , (@(task.IsCompleted ? "Done" : "Pending"))</li>
-        }
-    </ul>
-}
-
-<input @bind="newTitle" placeholder="Title" />
-<input @bind="newDesc" placeholder="Description" />
-<button @onclick="AddTask">Add Task</button>
-
+                        <!-- Filter checkbox -->
+                        <label>
+                            <input type="checkbox" @bind="showCompleted" />
+                            Show Completed Only
+                        </label>
+                        <br/>
+                        <button class="btn btn-primary" @onclick="OnInitializedAsync">Filter</button>
+                    </div>
+                    <br/>
+                    <label>Title, Description, IsCompleted</label>
+                    <div style="display:flex; align-items:left; gap:10px;border:1px solid black; padding:10px; flex-direction:column;">
+                        @if (tasks == null)
+                        {
+                            <p><em>Loading...</em></p>
+                        }
+                        else
+                        {
+                            <ul>
+                                @foreach (var task in tasks)
+                                {
+                                    <li>@task.Title ,     @task.Description , (@(task.IsCompleted ? "Done" : "Pending")), <input type="checkbox"  value="task.IsCompleted"  @onchange="@(async (e) => await UpdateTaskStatus(e, task))" />  </li>
+                                }
+                            </ul>
+                        }
+                  </div>
+                      <br/>
+    @* </div>
+        <div class="col-md-6"> *@
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <input @bind="newTitle" placeholder="Title" />
+                        <input @bind="newDesc" placeholder="Description" />
+                        <button @onclick="AddTask">Add Task</button>
+                    </div>
+                   <br/>
+            </div>
+        </div>
+    </div>
 @code {
+    private string searchText = string.Empty;
+    private bool showCompleted = false;
+      private bool IsCompleted = false;
     private List<TaskDto>? tasks;
     private string newTitle = "";
     private string newDesc = "";
+    private bool IsChecked = false;
 
     protected override async Task OnInitializedAsync()
     {
         tasks = await TaskService.GetAllTasksAsync();
+
+        if(searchText!="")
+        {       
+              tasks = tasks.Where(t =>
+                (t.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase)) &&
+                (!showCompleted || t.IsCompleted)).ToList<TaskDto>();
+                
+        }
+        StateHasChanged();    
     }
+          
 
     private async Task AddTask()
     {
@@ -40,5 +78,18 @@ else
         newTitle = newDesc = "";
 
         StateHasChanged();
+    }
+
+    private async Task UpdateTaskStatus(ChangeEventArgs e, TaskDto task)
+    {
+        // In a real application, send the updated task to your API to save to the database
+        //Console.WriteLine($"Task {task.Id} - IsCompleted: {task.IsCompleted}");
+        // Example: await Http.PutAsJsonAsync($"api/tasks/{task.Id}", task);
+         task.IsCompleted = !task.IsCompleted;
+         await TaskService.UpdateTaskAsync(task);
+        //tasks = await TaskService.GetAllTasksAsync();
+       // newTitle = newDesc = "";
+         StateHasChanged();    
+        //StateHasChanged();
     }
 }

@@ -20,4 +20,10 @@ public class TaskService
     {
         await _http.PostAsJsonAsync("/api/Tasks/Create", task);
     }
+
+
+     public async Task UpdateTaskAsync(TaskDto task)
+    {
+        await _http.PostAsJsonAsync("/api/Tasks/UpdateATask", task);
+    }
 }

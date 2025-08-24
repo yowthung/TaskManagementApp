@@ -23,6 +23,9 @@ public class TaskRepository : ITaskRepository
     public async Task AddAsync(TaskItem task, CancellationToken ct = default) =>
         await _context.Tasks.AddAsync(task, ct);
 
+    public async Task UpdateAsync(TaskItem task, CancellationToken ct = default) =>
+        await _context.Tasks.Where(e => e.Id == task.Id) .ExecuteUpdateAsync(s => s.SetProperty(e => e.IsCompleted, e => task.IsCompleted));
+
     public async Task SaveChangesAsync(CancellationToken ct = default) =>
         await _context.SaveChangesAsync(ct);
 }

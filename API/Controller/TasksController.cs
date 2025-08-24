@@ -28,4 +28,13 @@ public class TasksController : ControllerBase
         var id = await _mediator.Send(cmd);
         return CreatedAtAction(nameof(GetAll), new { id }, id);
     }
+
+    
+    [HttpPost]
+    [Route("api/[controller]/UpdateATask")]
+    public async Task<IActionResult> UpdateATask([FromBody] UpdateTaskCommand cmd)
+    {
+        var result = await _mediator.Send(cmd);
+         return NoContent();
+    }
 }

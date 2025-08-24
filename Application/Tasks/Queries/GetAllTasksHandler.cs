@@ -1,4 +1,4 @@
-namespace application;
+namespace Application.Tasks.Queries;
 
 
 using MediatR;
@@ -6,16 +6,17 @@ using Application.Tasks.DTOs;
 using Domain.Repositories;
 using Application.Tasks.Queries;
 
+public record GetAllTasksQuery() : IRequest<List<TaskDto>>;
 public class GetAllTasksHandler : IRequestHandler<GetAllTasksQuery, List<TaskDto>>
 {
-   private readonly ITaskRepository _repo;
+    private readonly ITaskRepository _repo;
 
     public GetAllTasksHandler(ITaskRepository repo)
     {
         _repo = repo;
     }
 
-     public async Task<List<TaskDto>> Handle(GetAllTasksQuery request, CancellationToken ct)
+    public async Task<List<TaskDto>> Handle(GetAllTasksQuery request, CancellationToken ct)
     {
         var tasks = await _repo.GetAllAsync(ct);
 
@@ -23,7 +24,9 @@ public class GetAllTasksHandler : IRequestHandler<GetAllTasksQuery, List<TaskDto
         {
             Id = t.Id,
             Title = t.Title,
-            IsCompleted = t.IsCompleted
+            Description = t.Description,
+            IsCompleted = t.IsCompleted,
+            CreatedAt = t.CreatedAt
         }).ToList();
     }
 }

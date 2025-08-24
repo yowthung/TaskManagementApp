@@ -1,7 +1,7 @@
 using MediatR;
 using Domain.Entities;
 using Domain.Repositories;
-
+ 
 namespace Application.Tasks.Command;
 
 public record AddTaskCommand(string Title, string Description, bool IsCompleted, DateTime CreatedAt) : IRequest<int>;
