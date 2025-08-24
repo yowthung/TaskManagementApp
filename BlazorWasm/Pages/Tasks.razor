@@ -1,0 +1,44 @@
+@page "/tasks"
+@inject TaskService TaskService
+
+<h3>Tasks</h3>
+
+@if (tasks == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <ul>
+        @foreach (var task in tasks)
+        {
+            <li>@task.Title ,     @task.Description , (@(task.IsCompleted ? "Done" : "Pending"))</li>
+        }
+    </ul>
+}
+
+<input @bind="newTitle" placeholder="Title" />
+<input @bind="newDesc" placeholder="Description" />
+<button @onclick="AddTask">Add Task</button>
+
+@code {
+    private List<TaskDto>? tasks;
+    private string newTitle = "";
+    private string newDesc = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        tasks = await TaskService.GetAllTasksAsync();
+    }
+
+    private async Task AddTask()
+    {
+        TaskDto newTask = new TaskDto { Title = newTitle, Description = newDesc ,IsCompleted = false, CreatedAt = DateTime.Now}; 
+
+        await TaskService.AddTaskAsync(newTask);
+        tasks = await TaskService.GetAllTasksAsync();
+        newTitle = newDesc = "";
+
+        StateHasChanged();
+    }
+}

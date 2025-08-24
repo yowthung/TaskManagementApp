@@ -1,0 +1,49 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+	 {
+  "label": "build-application",
+  "type": "process",
+  "command": "dotnet",
+  "args": [ "build", "--project", "Application\\application.csproj" ],
+  "problemMatcher": "$msCompile"
+},
+	{
+  "label": "build-domain",
+  "type": "process",
+  "command": "dotnet",
+  "args": [ "build", "--project", "Domain\\domain.csproj" ],
+  "problemMatcher": "$msCompile"
+},
+	 {
+  "label": "build-infrastructure",
+  "type": "process",
+  "command": "dotnet",
+  "args": [ "build", "--project", "Infrastructure\\infrastructure.csproj" ],
+  "problemMatcher": "$msCompile"
+},
+    {
+      "label": "run-api",
+      "type": "process",
+      "command": "dotnet",
+      "args": [ "run", "--project", "API\\API.csproj" ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "run-blazor",
+      "type": "process",
+      "command": "dotnet",
+      "args": [ "run", "--project", "BlazorWasm\\BlazorWasm.csproj" ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "build-all",
+      "dependsOn": ["build-application","build-domain","build-infrastructure","run-api"],
+      "dependsOrder": "sequence",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
+}

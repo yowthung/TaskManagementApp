@@ -1,0 +1,31 @@
+{
+  "version": "0.2.0",
+  "compounds": [
+    {
+      "name": "Launch API + BlazorWasm",
+      "configurations": [ "Launch API", "Launch BlazorWasm" ]
+    }
+  ],
+  "configurations": [
+    {
+      "name": "Launch API",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "run-api",
+      "program": "${workspaceFolder}/API/bin/Debug/net8.0/API.dll",
+      "cwd": "${workspaceFolder}/API",
+      "console": "integratedTerminal",
+        "stopAtEntry": false,
+    },
+    {
+      "name": "Launch BlazorWasm",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "run-blazor",
+      "program": "${workspaceFolder}/BlazorWasm/bin/Debug/net8.0/BlazorWasm.dll",
+      "cwd": "${workspaceFolder}/BlazorWasm",
+      "console": "integratedTerminal",
+        "stopAtEntry": false,
+    }
+  ]
+}
