@@ -1,34 +1,34 @@
 @page "/tasks"
 @inject TaskService TaskService
-   <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                    <h3>Tasks</h3>
-                    <div style="display:flex; align-items:center; gap:10px;">
+   <div class="container mt-4">
+     <h3 class="mb-3">Task List</h3>
+         <div class="row mb-3">
+           <div class="col-md-12 col-sm-12">
+                    <div class="col-md-12 col-sm-12 d-flex align-items-center mt-2 mt-md-0" style="display:flex; align-items:center; gap:10px;">
                         <!-- Filter input -->
-                        <input type="text" @bind="searchText" placeholder="Search tasks by title..." class="form-control mb-3" style="width: 50em;" />
+                        <input type="text" @bind="searchText" placeholder="Search tasks by title..." class="form-control mb-3" style="width: 50rem;" />
 
                         <!-- Filter checkbox -->
                         <label>
-                            <input type="checkbox" @bind="showCompleted" />
+                            <input type="checkbox" @bind="showCompleted"  class="form-check-input me-2"/>
                             Show Completed Only
                         </label>
                         <br/>
-                        <button class="btn btn-primary" @onclick="OnInitializedAsync">Filter</button>
+                        <button class="btn btn-primary" @onclick="OnFilterChanged">Filter</button>
                     </div>
                     <br/>
                     <label>Title, Description, IsCompleted</label>
-                    <div style="display:flex; align-items:left; gap:10px;border:1px solid black; padding:10px; flex-direction:column;">
+                    <div class="col-md-12 col-sm-12 d-flex align-items-left mt-2 mt-md-0" style="display:flex; gap:10px; padding:10px; flex-direction:column;">
                         @if (tasks == null)
                         {
                             <p><em>Loading...</em></p>
                         }
                         else
                         {
-                            <ul>
+                            <ul class="ms-3">
                                 @foreach (var task in tasks)
                                 {
-                                    <li>@task.Title ,     @task.Description , (@(task.IsCompleted ? "Done" : "Pending")), <input type="checkbox"  value="task.IsCompleted"  @onchange="@(async (e) => await UpdateTaskStatus(e, task))" />  </li>
+                                    <li>@task.Title ,     @task.Description , (@(task.IsCompleted ? "Done" : "Pending")), <input class="form-check-input me-2" type="checkbox"  value="task.IsCompleted"  @onchange="@(async (e) => await UpdateTaskStatus(e, task))" />  </li>
                                 }
                             </ul>
                         }
@@ -36,10 +36,10 @@
                       <br/>
     @* </div>
         <div class="col-md-6"> *@
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <input @bind="newTitle" placeholder="Title" />
-                        <input @bind="newDesc" placeholder="Description" />
-                        <button @onclick="AddTask">Add Task</button>
+                    <div class="col-md-12 col-sm-12 d-flex align-items-center mt-2 mt-md-0" style="display:flex; align-items:center; gap:10px;">
+                        <input @bind="newTitle" placeholder="Title"  class="form-control" />
+                        <input @bind="newDesc" placeholder="Description" class="form-control"  />
+                        <button @onclick="AddTask" class="btn btn-sm btn-danger">Add Task</button>
                     </div>
                    <br/>
             </div>
@@ -58,16 +58,36 @@
     {
         tasks = await TaskService.GetAllTasksAsync();
 
-        if(searchText!="")
+       @*  if(searchText!="" || showCompleted)
         {       
               tasks = tasks.Where(t =>
                 (t.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase)) &&
-                (!showCompleted || t.IsCompleted)).ToList<TaskDto>();
+                (t.IsCompleted == showCompleted)).ToList<TaskDto>();
                 
-        }
+        } *@
         StateHasChanged();    
     }
           
+    private async Task OnFilterChanged()
+    {
+        tasks = await TaskService.GetAllTasksAsync();
+
+        if(searchText!="" && showCompleted)
+        {       
+                tasks = tasks.Where(t =>
+                (t.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase)) &&
+                (t.IsCompleted == showCompleted)).ToList<TaskDto>();
+                
+        }else if(showCompleted)
+        {
+                tasks = tasks.Where(t => t.IsCompleted == showCompleted).ToList<TaskDto>();
+                    
+        }else if(searchText!="")
+        {
+                tasks = tasks.Where(t => t.Title.Contains(searchText, StringComparison.OrdinalIgnoreCase)).ToList<TaskDto>();
+        }
+        StateHasChanged();    
+    }
 
     private async Task AddTask()
     {
